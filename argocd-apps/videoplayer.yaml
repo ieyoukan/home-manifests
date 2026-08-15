@@ -6,14 +6,14 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/p-nasimonan/ubichill-videoplayer.git
+    repoURL: https://github.com/ieyoukan/ubichill-videoplayer.git
     targetRevision: main
     path: charts/video-player-backend
     helm:
       releaseName: video-player-backend
       valuesObject:
         image:
-          repository: ghcr.io/p-nasimonan/video-player-backend
+          repository: ghcr.io/ieyoukan/video-player-backend
           tag: latest
           pullPolicy: Always
         ingress:
