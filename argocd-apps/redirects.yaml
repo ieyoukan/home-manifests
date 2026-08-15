@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/p-nasimonan/home-manifests.git
+    repoURL: https://github.com/ieyoukan/home-manifests.git
     targetRevision: HEAD
     path: apps/redirects
   destination:
