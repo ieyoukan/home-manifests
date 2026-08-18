@@ -76,3 +76,23 @@ spec:
             name: ubichill-youkan-redirect
             port:
               number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ubichill-app-redirect
+  namespace: redirects
+spec:
+  ingressClassName: cloudflare
+  rules:
+  - host: app.ubichill.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ubichill-youkan-redirect
+            port:
+              number: 80
