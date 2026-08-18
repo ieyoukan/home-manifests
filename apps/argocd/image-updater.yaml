@@ -6,9 +6,9 @@ metadata:
 spec:
   namespace: argocd
   applicationRefs:
-    - namePattern: "ubichill-dev"
-      useAnnotations: true
     - namePattern: "ubichill"
       useAnnotations: true
     - namePattern: "vrc-queue-monitor"
+      useAnnotations: true
+    - namePattern: "videoplayer"
       useAnnotations: true
