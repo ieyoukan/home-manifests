@@ -23,6 +23,10 @@ spec:
           repository: ghcr.io/ieyoukan/video-player-backend
           tag: 0.1.5
           pullPolicy: IfNotPresent
+        # VODは同一origin file gatewayを使う。sidecar readinessで全Podを
+        # Serviceから外さないよう、本番ではoptional providerを無効化する。
+        potProvider:
+          enabled: false
         ingress:
           enabled: true
           className: cloudflare
