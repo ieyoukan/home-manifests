@@ -21,8 +21,8 @@ spec:
       valuesObject:
         image:
           repository: ghcr.io/ieyoukan/video-player-backend
-          tag: latest
-          pullPolicy: Always
+          tag: 0.1.3
+          pullPolicy: IfNotPresent
         ingress:
           enabled: true
           className: cloudflare
