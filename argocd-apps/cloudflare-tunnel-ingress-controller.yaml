@@ -11,7 +11,7 @@ spec:
   project: default
   sources:
     # Sealed Secret と Helm chart の管理
-    - repoURL: https://github.com/p-nasimonan/home-manifests.git
+    - repoURL: https://github.com/ieyoukan/home-manifests.git
       targetRevision: main
       path: apps/cloudflare
     - repoURL: https://helm.strrl.dev

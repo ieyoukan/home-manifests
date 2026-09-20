@@ -9,8 +9,8 @@ metadata:
     ## argocd-image-updater
     ## backend は api/collector で同じイメージを使うので1エイリアスにまとめる
     argocd-image-updater.argoproj.io/image-list: >-
-      backend=ghcr.io/p-nasimonan/vrc-queue-monitor/backend,
-      frontend=ghcr.io/p-nasimonan/vrc-queue-monitor/frontend
+      backend=ghcr.io/ieyoukan/vrc-queue-monitor/backend,
+      frontend=ghcr.io/ieyoukan/vrc-queue-monitor/frontend
 
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
@@ -30,7 +30,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/p-nasimonan/vrc-queue-monitor.git
+    repoURL: https://github.com/ieyoukan/vrc-queue-monitor.git
     targetRevision: HEAD
     path: charts/vrc-queue-monitor
     helm:

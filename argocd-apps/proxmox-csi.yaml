@@ -9,7 +9,7 @@ spec:
   project: default
   sources:
     # SealedSecret (Proxmox API credentials)
-    - repoURL: https://github.com/p-nasimonan/home-manifests.git
+    - repoURL: https://github.com/ieyoukan/home-manifests.git
       targetRevision: main
       path: apps/proxmox-csi
     # Helm chart (OCI registry)

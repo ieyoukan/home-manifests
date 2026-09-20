@@ -3,19 +3,30 @@ kind: Application
 metadata:
   name: videoplayer
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/ieyoukan/video-player-backend
+    argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^v[0-9]
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/backend.helm.image-name: image.repository
+    argocd-image-updater.argoproj.io/backend.helm.image-tag: image.tag
 spec:
   project: default
   source:
-    repoURL: https://github.com/p-nasimonan/ubichill-videoplayer.git
+    repoURL: https://github.com/ieyoukan/ubichill-videoplayer.git
     targetRevision: main
     path: charts/video-player-backend
     helm:
       releaseName: video-player-backend
       valuesObject:
         image:
-          repository: ghcr.io/p-nasimonan/video-player-backend
-          tag: latest
-          pullPolicy: Always
+          repository: ghcr.io/ieyoukan/video-player-backend
+          tag: 0.1.5
+          pullPolicy: IfNotPresent
+        # VODは同一origin file gatewayを使う。sidecar readinessで全Podを
+        # Serviceから外さないよう、本番ではoptional providerを無効化する。
+        potProvider:
+          enabled: false
         ingress:
           enabled: true
           className: cloudflare
