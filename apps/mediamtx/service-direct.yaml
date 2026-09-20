@@ -1,0 +1,21 @@
+# OBS入力とPC版VRChat向けの直接接続用。
+# ルーターではTCP/8554だけをWAN公開し、TCP/1935は公開しないこと。
+apiVersion: v1
+kind: Service
+metadata:
+  name: mediamtx-direct
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.0.221
+  externalTrafficPolicy: Cluster
+  selector:
+    app: mediamtx
+  ports:
+    - name: rtmp
+      port: 1935
+      targetPort: 1935
+      protocol: TCP
+    - name: rtsp
+      port: 8554
+      targetPort: 8554
+      protocol: TCP

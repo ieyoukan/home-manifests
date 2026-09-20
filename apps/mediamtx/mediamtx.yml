@@ -1,0 +1,29 @@
+logLevel: info
+
+# OBSからの入力。WAN側には転送せず、LAN内からだけ利用する。
+rtmp: yes
+rtmpAddress: :1935
+
+# PC版VRChat向け。rtspt:// で接続させ、映像もTCPに多重化する。
+rtsp: yes
+rtspAddress: :8554
+rtspTransports: [tcp]
+
+# Quest/Android向けのフォールバック。Cloudflare TunnelでHTTPS化する。
+# MPEG-TSはLL-HLSより遅延するが、VRChatでの互換性を優先する。
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigins: ["*"]
+hlsAlwaysRemux: yes
+hlsVariant: mpegts
+hlsSegmentCount: 3
+hlsSegmentDuration: 1s
+
+# 未使用プロトコルは無効化
+webrtc: no
+srt: no
+moq: no
+
+paths:
+  vrchat:
+    source: publisher
