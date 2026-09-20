@@ -9,7 +9,7 @@ spec:
   project: default
   sources:
     # SealedSecret (MinIO credentials)
-    - repoURL: https://github.com/p-nasimonan/home-manifests.git
+    - repoURL: https://github.com/ieyoukan/home-manifests.git
       targetRevision: main
       path: apps/minio
     # Helm chart

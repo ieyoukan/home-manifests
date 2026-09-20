@@ -9,7 +9,7 @@ spec:
   project: default
   sources:
     # Sealed Secret の管理
-    - repoURL: https://github.com/p-nasimonan/home-manifests.git
+    - repoURL: https://github.com/ieyoukan/home-manifests.git
       targetRevision: main
       path: apps/dashy
     # Helm chart の管理

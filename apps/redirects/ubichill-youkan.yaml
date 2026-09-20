@@ -7,7 +7,7 @@ data:
   default.conf: |
     server {
         listen 80;
-        return 301 https://app.ubichill.com$request_uri;
+        return 301 https://ubichill.com$request_uri;
     }
 ---
 apiVersion: apps/v1
@@ -67,6 +67,26 @@ spec:
   ingressClassName: cloudflare
   rules:
   - host: ubichill.youkan.uk
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ubichill-youkan-redirect
+            port:
+              number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ubichill-app-redirect
+  namespace: redirects
+spec:
+  ingressClassName: cloudflare
+  rules:
+  - host: app.ubichill.com
     http:
       paths:
       - path: /

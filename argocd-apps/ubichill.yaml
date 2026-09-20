@@ -39,7 +39,7 @@ spec:
         - values-prod.yaml
       valuesObject:
         global:
-          domain: app.ubichill.com
+          domain: ubichill.com
           imageRegistry: ""
         backend:
           existingSecret: "ubichill-secrets"
