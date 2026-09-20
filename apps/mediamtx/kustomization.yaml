@@ -6,7 +6,6 @@ resources:
   - service-direct.yaml
   - service-hls.yaml
   - ingress.yaml
-  - mediamtx-secrets.enc.yaml
 
 configMapGenerator:
   - name: mediamtx-config

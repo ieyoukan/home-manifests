@@ -1,11 +1,13 @@
 logLevel: info
 
-# VRChatからの視聴だけを匿名許可する。配信ユーザーはDeploymentから追加する。
+# LAN内OBSからの配信とVRChatからの視聴を、このパスだけ匿名許可する。
 authInternalUsers:
   - user: any
     pass:
     ips: []
     permissions:
+      - action: publish
+        path: vrchat/youkan
       - action: read
         path: vrchat/youkan
 
