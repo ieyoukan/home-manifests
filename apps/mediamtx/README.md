@@ -26,19 +26,20 @@ publisher-pass=<十分に長いランダムなパスワード>
 ## OBS
 
 - サービス: カスタム
-- サーバー: `rtmp://192.168.0.221`
-- ストリームキー: `vrchat?user=<user>&pass=<pass>`
+- サーバー: `rtmp://192.168.0.221/vrchat`
+- ストリームキー: `youkan`
+- Bearer Token: `<user>:<pass>`
 - 映像: H.264
 - 音声: AAC
 - キーフレーム間隔: 1秒
 - Bフレーム: 0（設定できる場合）
 
-`<user>`と`<pass>`には`mediamtx-secrets.env`の値を使う。`live.youkan.uk`はCloudflare経由のHLS視聴用なので、RTMP入力先には使わない。
+`<user>`と`<pass>`には`mediamtx-secrets.env`の値を使う。Bearer Tokenは、たとえば`publisher:実際のパスワード`という形式になる。`live.youkan.uk`はCloudflare経由のHLS視聴用なので、RTMP入力先には使わない。
 
 ## VRChat
 
-- PC低遅延: `rtspt://rtsp.live.youkan.uk/vrchat`
-- Quest/Android: `https://live.youkan.uk/vrchat/index.m3u8`
+- PC低遅延: `rtspt://rtsp.live.youkan.uk/vrchat/youkan`
+- Quest/Android: `https://live.youkan.uk/vrchat/youkan/index.m3u8`
 
 ワールドでは`VRCAVProVideoPlayer`を使い、`Low Latency`を有効にする。独自ドメインを使うため、視聴者側の`Allow Untrusted URLs`と、Public/Group Publicインスタンスではワールド設定の`Video Player Allowed Domains`も必要になる。
 

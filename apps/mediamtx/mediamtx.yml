@@ -7,7 +7,7 @@ authInternalUsers:
     ips: []
     permissions:
       - action: read
-        path: vrchat
+        path: vrchat/youkan
 
 # OBSからの入力。WAN側には転送せず、LAN内からだけ利用する。
 rtmp: yes
@@ -34,5 +34,5 @@ srt: no
 moq: no
 
 paths:
-  vrchat:
+  vrchat/youkan:
     source: publisher

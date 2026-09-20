@@ -42,7 +42,7 @@ spec:
             - name: MTX_AUTHINTERNALUSERS_1_PERMISSIONS_0_ACTION
               value: publish
             - name: MTX_AUTHINTERNALUSERS_1_PERMISSIONS_0_PATH
-              value: vrchat
+              value: vrchat/youkan
           volumeMounts:
             - name: config
               mountPath: /mediamtx.yml
