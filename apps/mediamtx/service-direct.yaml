@@ -1,5 +1,5 @@
 # OBS入力とPC版VRChat向けの直接接続用。
-# ルーターではTCP/8554だけをWAN公開し、TCP/1935は公開しないこと。
+# ルーターではTCP/554だけをWAN公開し、TCP/1935は公開しないこと。
 apiVersion: v1
 kind: Service
 metadata:
@@ -16,6 +16,6 @@ spec:
       targetPort: 1935
       protocol: TCP
     - name: rtsp
-      port: 8554
+      port: 554
       targetPort: 8554
       protocol: TCP
