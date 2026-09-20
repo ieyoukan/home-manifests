@@ -1,5 +1,14 @@
 logLevel: info
 
+# VRChatからの視聴だけを匿名許可する。配信ユーザーはDeploymentから追加する。
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: read
+        path: vrchat
+
 # OBSからの入力。WAN側には転送せず、LAN内からだけ利用する。
 rtmp: yes
 rtmpAddress: :1935
