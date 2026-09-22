@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pplale-cms
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ieyoukan/pplale-cms.git
+    targetRevision: main
+    path: helm/pplale-cms
+    helm:
+      releaseName: pplale-cms
+      valuesObject:
+        baseURL: https://pplale-cms.youkan.uk
+        bootstrapAdmin:
+          discordId: "362871668667842560"
+          name: "bootstrap admin"
+        secrets:
+          existingSecret: pplale-cms-secrets
+          create: false
+        ingress:
+          enabled: true
+          className: cloudflare
+          hosts:
+            - host: pplale-cms.youkan.uk
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+        postgresql:
+          enabled: true
+          auth:
+            username: pplale
+            database: pplale_cms
+            existingSecret: pplale-cms-postgresql
+          primary:
+            persistence:
+              enabled: true
+              storageClass: proxmox-data
+              size: 1Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pplale-cms
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 5
