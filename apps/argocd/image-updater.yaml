@@ -12,3 +12,5 @@ spec:
       useAnnotations: true
     - namePattern: "videoplayer"
       useAnnotations: true
+    - namePattern: "pplale-cms"
+      useAnnotations: true
