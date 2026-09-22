@@ -5,6 +5,18 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
+
+    ## argocd-image-updater
+    argocd-image-updater.argoproj.io/image-list: pplale-cms=ghcr.io/ieyoukan/pplale-cms
+    argocd-image-updater.argoproj.io/pplale-cms.update-strategy: semver
+    argocd-image-updater.argoproj.io/pplale-cms.allow-tags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
+
+    ## write-back: Application の helm.parameters に書き込む
+    ## auto-sync が有効なら自動的に再デプロイされる
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+
+    ## エイリアス名と一致させること（alias.helm.image-tag）
+    argocd-image-updater.argoproj.io/pplale-cms.helm.image-tag: image.tag
 spec:
   project: default
   source:

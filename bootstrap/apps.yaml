@@ -31,3 +31,10 @@ spec:
       jqPathExpressions:
         - .spec.source.helm.parameters
         - .spec.sources[].helm.parameters
+    - group: argoproj.io
+      kind: Application
+      name: pplale-cms
+      namespace: argocd
+      jqPathExpressions:
+        - .spec.source.helm.parameters
+        - .spec.sources[].helm.parameters
