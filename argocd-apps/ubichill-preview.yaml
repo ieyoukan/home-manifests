@@ -43,8 +43,6 @@ spec:
               value: 'sha-{{head_sha}}'
             - name: frontend.image.tag
               value: 'sha-{{head_sha}}'
-            - name: 'pluginBackends[0].image.tag'
-              value: 'sha-{{head_sha}}'
           valuesObject:
             global:
               imageRegistry: ""
@@ -72,15 +70,6 @@ spec:
             ingress:
               className: cloudflare
               annotations: {}
-            pluginBackends:
-              - id: video-player
-                image:
-                  repository: ghcr.io/ubichill/video-player-backend
-                port: 8000
-                pathPrefix: /plugins/video-player/api
-                env:
-                  ROOT_PATH: /plugins/video-player/api
-                  CORS_ORIGINS: "*"
       destination:
         server: https://kubernetes.default.svc
         namespace: 'preview-pr-{{number}}'
