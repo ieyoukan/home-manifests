@@ -1,78 +1,80 @@
-## Grafana は既存のものを使用するため無効化
-grafana:
-  enabled: false
-
-## Prometheus 設定
-prometheus:
-  prometheusSpec:
-    ## データ保持期間
-    retention: 30d
-
-    ## Persistent Volume 設定
-    storageSpec:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: proxmox-data
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 50Gi
-
-    ## 全ネームスペースの Custom Resource を自動検出
-    serviceMonitorSelectorNilUsesHelmValues: false
-    podMonitorSelectorNilUsesHelmValues: false
-    ruleSelectorNilUsesHelmValues: false
-
-    ## リソース制限
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
-      limits:
-        memory: 2Gi
-
-## Alertmanager 設定
-alertmanager:
-  alertmanagerSpec:
-    ## Persistent Volume 設定
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: proxmox-data
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi
-
-    ## リソース制限
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
-      limits:
-        memory: 3Gi
-
-## Prometheus Operator 設定
-prometheusOperator:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      memory: 512Mi
-  admissionWebhooks:
+## サブチャート (kube-prometheus-stack) に渡すため、このキー配下に記述すること
+kube-prometheus-stack:
+  ## Grafana は既存のものを使用するため無効化
+  grafana:
     enabled: false
-    patch:
+
+  ## Prometheus 設定
+  prometheus:
+    prometheusSpec:
+      ## データ保持期間
+      retention: 30d
+
+      ## Persistent Volume 設定
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: proxmox-data
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 50Gi
+
+      ## 全ネームスペースの Custom Resource を自動検出
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+
+      ## リソース制限
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          memory: 2Gi
+
+  ## Alertmanager 設定
+  alertmanager:
+    alertmanagerSpec:
+      ## Persistent Volume 設定
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: proxmox-data
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 10Gi
+
+      ## リソース制限
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          memory: 3Gi
+
+  ## Prometheus Operator 設定
+  prometheusOperator:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    admissionWebhooks:
       enabled: false
-  tls:
-    enabled: false
+      patch:
+        enabled: false
+    tls:
+      enabled: false
 
-## Node Exporter 設定（全ノードにデプロイするため tolerations を付与）
-nodeExporter:
-  enabled: true
-  tolerations:
-    - operator: Exists
+  ## Node Exporter 設定（全ノードにデプロイするため tolerations を付与）
+  nodeExporter:
+    enabled: true
+    tolerations:
+      - operator: Exists
 
-## Kube State Metrics 設定
-kubeStateMetrics:
-  enabled: true
+  ## Kube State Metrics 設定
+  kubeStateMetrics:
+    enabled: true
