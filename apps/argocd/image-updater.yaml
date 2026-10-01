@@ -4,7 +4,6 @@ metadata:
   name: apps-image-updater
   namespace: argocd
 spec:
-  namespace: argocd
   # Application の helm.parameters に書き込む。auto-sync で自動的に再デプロイされる
   writeBackConfig:
     method: argocd
