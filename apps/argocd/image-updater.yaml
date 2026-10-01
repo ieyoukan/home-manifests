@@ -5,12 +5,70 @@ metadata:
   namespace: argocd
 spec:
   namespace: argocd
+  # Application の helm.parameters に書き込む。auto-sync で自動的に再デプロイされる
+  writeBackConfig:
+    method: argocd
   applicationRefs:
-    - namePattern: "ubichill"
-      useAnnotations: true
-    - namePattern: "vrc-queue-monitor"
-      useAnnotations: true
-    - namePattern: "videoplayer"
-      useAnnotations: true
-    - namePattern: "pplale-cms"
-      useAnnotations: true
+    - namePattern: ubichill
+      images:
+        - alias: backend
+          imageName: ghcr.io/ubichill/ubichill-backend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: backend.image.repository
+              tag: backend.image.tag
+        - alias: frontend
+          imageName: ghcr.io/ubichill/ubichill-frontend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: frontend.image.repository
+              tag: frontend.image.tag
+
+    - namePattern: vrc-queue-monitor
+      images:
+        # api / collector は同じイメージなので 1 エイリアスにまとめる
+        - alias: backend
+          imageName: ghcr.io/ieyoukan/vrc-queue-monitor/backend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              tag: backend.image.tag
+        - alias: frontend
+          imageName: ghcr.io/ieyoukan/vrc-queue-monitor/frontend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              tag: frontend.image.tag
+
+    - namePattern: videoplayer
+      images:
+        - alias: backend
+          imageName: ghcr.io/ieyoukan/video-player-backend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: image.repository
+              tag: image.tag
+
+    - namePattern: pplale-cms
+      images:
+        - alias: pplale-cms
+          imageName: ghcr.io/ieyoukan/pplale-cms
+          commonUpdateSettings:
+            updateStrategy: semver
+            allowTags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
+          manifestTargets:
+            helm:
+              tag: image.tag
