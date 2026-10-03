@@ -62,6 +62,7 @@ spec:
                 repository: ghcr.io/ubichill/ubichill-backend
               env:
                 SKIP_EMAIL_VERIFICATION: "true"
+                WORLDS_FEDERATION_PEERS: "https://ubichill.com"
             frontend:
               image:
                 repository: ghcr.io/ubichill/ubichill-frontend
