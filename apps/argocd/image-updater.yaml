@@ -71,3 +71,14 @@ spec:
           manifestTargets:
             helm:
               tag: image.tag
+
+    - namePattern: pplale-cpu-server
+      images:
+        - alias: pplale-cpu-server
+          imageName: ghcr.io/ieyoukan/pplale-cpu-server
+          commonUpdateSettings:
+            updateStrategy: semver
+            allowTags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
+          manifestTargets:
+            helm:
+              tag: image.tag

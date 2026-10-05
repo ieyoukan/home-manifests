@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pplale-cpu-server
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ieyoukan/PPLALE-web.git
+    targetRevision: main
+    path: helm/pplale-cpu-server
+    helm:
+      releaseName: pplale-cpu-server
+      valuesObject:
+        ingress:
+          enabled: true
+          className: cloudflare
+          hosts:
+            - host: pplale-cpu.youkan.uk
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+        persistence:
+          storageClass: proxmox-data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pplale-cpu-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 5
