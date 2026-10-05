@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pplale-room-server
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ieyoukan/PPLALE-web.git
+    targetRevision: main
+    path: helm/pplale-room-server
+    helm:
+      releaseName: pplale-room-server
+      valuesObject:
+        # ルームは同梱の Redis に置く。Pod は接続しか持たないので2台でローリング更新する。
+        replicaCount: 2
+        ingress:
+          enabled: true
+          className: cloudflare
+          hosts:
+            - host: pplale-room.youkan.uk
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+        redis:
+          persistence:
+            storageClass: proxmox-data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pplale-room-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 5

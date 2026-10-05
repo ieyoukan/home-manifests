@@ -82,3 +82,14 @@ spec:
           manifestTargets:
             helm:
               tag: image.tag
+
+    - namePattern: pplale-room-server
+      images:
+        - alias: pplale-room-server
+          imageName: ghcr.io/ieyoukan/pplale-room-server
+          commonUpdateSettings:
+            updateStrategy: semver
+            allowTags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
+          manifestTargets:
+            helm:
+              tag: image.tag
