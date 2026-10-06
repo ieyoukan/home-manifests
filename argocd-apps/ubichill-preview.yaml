@@ -43,6 +43,8 @@ spec:
               value: 'sha-{{head_sha}}'
             - name: frontend.image.tag
               value: 'sha-{{head_sha}}'
+            - name: instanceRuntime.image.tag
+              value: 'sha-{{head_sha}}'
           valuesObject:
             global:
               imageRegistry: ""
@@ -66,6 +68,9 @@ spec:
             frontend:
               image:
                 repository: ghcr.io/ubichill/ubichill-frontend
+            instanceRuntime:
+              image:
+                repository: ghcr.io/ubichill/ubichill-instance
             nodeAffinity:
               enabled: false
             ingress:

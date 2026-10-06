@@ -28,6 +28,16 @@ spec:
             helm:
               name: frontend.image.repository
               tag: frontend.image.tag
+        # Go インスタンスサーバー。services/instance に変更があったときだけ新しいタグが出る
+        - alias: instance
+          imageName: ghcr.io/ubichill/ubichill-instance
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: instanceRuntime.image.repository
+              tag: instanceRuntime.image.tag
 
     - namePattern: vrc-queue-monitor
       images:

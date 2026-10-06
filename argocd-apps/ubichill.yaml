@@ -45,6 +45,10 @@ spec:
           image:
             repository: ghcr.io/ubichill/ubichill-frontend
             tag: latest
+        instanceRuntime:
+          image:
+            repository: ghcr.io/ubichill/ubichill-instance
+            tag: latest
         nodeAffinity:
           enabled: false
         ingress:
