@@ -62,6 +62,9 @@ spec:
             backend:
               image:
                 repository: ghcr.io/ubichill/ubichill-backend
+              secretEnv:
+                # 開発専用。chartの古い既定値でもGo/SNSに同じ32文字以上のキーを渡す。
+                INSTANCE_ADMIN_TOKEN: "dev-instance-admin-token-not-for-production"
               env:
                 SKIP_EMAIL_VERIFICATION: "true"
                 WORLDS_FEDERATION_PEERS: "https://ubichill.com"
@@ -69,6 +72,7 @@ spec:
               image:
                 repository: ghcr.io/ubichill/ubichill-frontend
             instanceRuntime:
+              secretKey: INSTANCE_ADMIN_TOKEN
               image:
                 repository: ghcr.io/ubichill/ubichill-instance
             nodeAffinity:
