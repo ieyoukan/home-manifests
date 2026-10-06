@@ -24,6 +24,13 @@ spec:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
   ignoreDifferences:
+    # Image Updater が Application に書き込んだイメージ用パラメータを親の self-heal で戻さない。
+    - group: argoproj.io
+      kind: Application
+      name: ubichill
+      namespace: argocd
+      jqPathExpressions:
+        - .spec.source.helm.parameters
     - group: argoproj.io
       kind: Application
       name: vrc-queue-monitor
