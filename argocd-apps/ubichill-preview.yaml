@@ -66,6 +66,9 @@ spec:
                 # 開発専用。chartの古い既定値でもGo/SNSに同じ32文字以上のキーを渡す。
                 INSTANCE_ADMIN_TOKEN: "dev-instance-admin-token-not-for-production"
               env:
+                INSTANCE_EMPTY_TIMEOUT_MS: "5000"
+                INSTANCE_REAP_INTERVAL_MS: "1000"
+                INSTANCE_RECOVERY_GRACE_MS: "60000"
                 SKIP_EMAIL_VERIFICATION: "true"
                 WORLDS_FEDERATION_PEERS: "https://ubichill.com"
             frontend:
