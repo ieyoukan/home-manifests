@@ -22,7 +22,10 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - RespectIgnoreDifferences=true
+      # Argo CD 3.2.0はRespectIgnoreDifferencesでvaluesObjectの差分処理がpanicする。
+      # SSAでImage Updaterのフィールドを保持し、差分のある子Applicationだけ同期する。
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
   ignoreDifferences:
     # Image Updater が Application に書き込んだイメージ用パラメータを親の self-heal で戻さない。
     - group: argoproj.io
