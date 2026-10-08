@@ -16,6 +16,9 @@ spec:
           repository: ghcr.io/ieyoukan/video-player-backend
           tag: 0.1.5
           pullPolicy: IfNotPresent
+        # ワールドの mod 更新が完了するまで旧 mod の利用を維持する。
+        env:
+          REQUIRE_SERVICE_TOKEN: "false"
         # VODは同一origin file gatewayを使う。sidecar readinessで全Podを
         # Serviceから外さないよう、本番ではoptional providerを無効化する。
         potProvider:
