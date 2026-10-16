@@ -1,0 +1,11 @@
+{{- /*
+  CreateNamespace=true で作った Namespace は Argo CD が消さないので、閉じた PR の Namespace が溜まり続けていた。
+  Namespace を Application のリソースにすれば、Application の削除（resources-finalizer）で中身ごと消える。
+*/}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ required "name を指定してください" .Values.name }}
+  labels:
+    environment: preview
+    component: ubichill

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: ubichill-preview-namespace
+description: ubichill のプレビュー環境の Namespace。Application の管理下に置き、PR を閉じたら Application と一緒に消す
+type: application
+version: 0.1.0

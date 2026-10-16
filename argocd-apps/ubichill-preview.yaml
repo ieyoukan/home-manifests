@@ -30,59 +30,73 @@ spec:
         - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
-      source:
-        repoURL: https://github.com/ubichill/ubichill
-        targetRevision: '{{head_sha}}'
-        path: charts/ubichill
-        helm:
-          valueFiles: ["values-dev.yaml"]
-          parameters:
-            - name: global.domain
-              value: 'pr-{{number}}.ubichill.com'
-            - name: backend.image.tag
-              value: 'sha-{{head_sha}}'
-            - name: frontend.image.tag
-              value: 'sha-{{head_sha}}'
-            - name: instanceRuntime.image.tag
-              value: 'sha-{{head_sha}}'
-          valuesObject:
-            global:
-              imageRegistry: ""
-            postgresql:
-              auth:
-                password: "preview-pr-{{number}}"
-                postgresPassword: "preview-pr-{{number}}-admin"
-              primary:
-                persistence:
-                  enabled: false
-            redis:
-              master:
-                persistence:
-                  enabled: false
-            backend:
-              image:
-                repository: ghcr.io/ubichill/ubichill-backend
-              secretEnv:
-                # 開発専用。chartの古い既定値でもGo/SNSに同じ32文字以上のキーを渡す。
-                INSTANCE_ADMIN_TOKEN: "dev-instance-admin-token-not-for-production"
-              env:
-                INSTANCE_EMPTY_TIMEOUT_MS: "5000"
-                INSTANCE_REAP_INTERVAL_MS: "1000"
-                INSTANCE_RECOVERY_GRACE_MS: "60000"
-                SKIP_EMAIL_VERIFICATION: "true"
-                WORLDS_FEDERATION_PEERS: "https://ubichill.com"
-            frontend:
-              image:
-                repository: ghcr.io/ubichill/ubichill-frontend
-            instanceRuntime:
-              secretKey: INSTANCE_ADMIN_TOKEN
-              image:
-                repository: ghcr.io/ubichill/ubichill-instance
-            nodeAffinity:
-              enabled: false
-            ingress:
-              className: cloudflare
-              annotations: {}
+      sources:
+        - repoURL: https://github.com/ubichill/ubichill
+          targetRevision: '{{head_sha}}'
+          path: charts/ubichill
+          helm:
+            # values-preview.yaml は PR が自分のプレビューの構成を持つためのもの（例: Go を複数 Pod にする）。
+            # 無い PR もあるので ignoreMissingValueFiles。下の parameters / valuesObject が常に優先する
+            valueFiles: ["values-dev.yaml", "values-preview.yaml"]
+            ignoreMissingValueFiles: true
+            parameters:
+              - name: global.domain
+                value: 'pr-{{number}}.ubichill.com'
+              - name: backend.image.tag
+                value: 'sha-{{head_sha}}'
+              - name: frontend.image.tag
+                value: 'sha-{{head_sha}}'
+              - name: instanceRuntime.image.tag
+                value: 'sha-{{head_sha}}'
+            valuesObject:
+              global:
+                imageRegistry: ""
+              postgresql:
+                auth:
+                  password: "preview-pr-{{number}}"
+                  postgresPassword: "preview-pr-{{number}}-admin"
+                primary:
+                  persistence:
+                    enabled: false
+              redis:
+                # 空だと Bitnami が描画のたびにパスワードを作り直し、backend・Go が繋がらなくなる
+                auth:
+                  password: "preview-pr-{{number}}-redis"
+                master:
+                  persistence:
+                    enabled: false
+              backend:
+                image:
+                  repository: ghcr.io/ubichill/ubichill-backend
+                secretEnv:
+                  # 開発専用。chartの古い既定値でもGo/SNSに同じ32文字以上のキーを渡す。
+                  INSTANCE_ADMIN_TOKEN: "dev-instance-admin-token-not-for-production"
+                env:
+                  INSTANCE_EMPTY_TIMEOUT_MS: "5000"
+                  INSTANCE_REAP_INTERVAL_MS: "1000"
+                  INSTANCE_RECOVERY_GRACE_MS: "60000"
+                  SKIP_EMAIL_VERIFICATION: "true"
+                  WORLDS_FEDERATION_PEERS: "https://ubichill.com"
+              frontend:
+                image:
+                  repository: ghcr.io/ubichill/ubichill-frontend
+              instanceRuntime:
+                secretKey: INSTANCE_ADMIN_TOKEN
+                image:
+                  repository: ghcr.io/ubichill/ubichill-instance
+              nodeAffinity:
+                enabled: false
+              ingress:
+                className: cloudflare
+                annotations: {}
+        # Namespace を Application のリソースにして、PR を閉じたら一緒に消す
+        - repoURL: https://github.com/ieyoukan/home-manifests.git
+          targetRevision: main
+          path: apps/ubichill-preview-namespace
+          helm:
+            parameters:
+              - name: name
+                value: 'preview-pr-{{number}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: 'preview-pr-{{number}}'
@@ -90,12 +104,7 @@ spec:
         automated:
           prune: true
           selfHeal: true
-        managedNamespaceMetadata:
-          labels:
-            environment: preview
-            component: ubichill
         syncOptions:
-          - CreateNamespace=true
           - PrunePropagationPolicy=background
           - Replace=true
         retry:
