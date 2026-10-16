@@ -58,6 +58,10 @@ spec:
           className: cloudflare
           annotations: {}
         redis:
+          # Argo CD の描画で乱数を生成させない。現在稼働中の Redis と同じパスワードを Secret に固定する。
+          auth:
+            existingSecret: ubichill-secrets
+            existingSecretPasswordKey: REDIS_PASSWORD
           master:
             persistence:
               storageClass: "proxmox-data"
