@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keda
+  namespace: argocd
+  annotations:
+    # ScaledObject を使う Application（sync-wave 0）より先に CRD と external metrics API を入れる
+    argocd.argoproj.io/sync-wave: "-3"
+  # resources-finalizer は付けない。Application を消したときに CRD まで消え、全 ScaledObject が消えるのを防ぐ
+spec:
+  project: default
+  source:
+    repoURL: https://kedacore.github.io/charts
+    chart: keda
+    targetRevision: 2.21.0
+    helm:
+      releaseName: keda
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keda
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # CRD は chart の templates にあり、ScaledJob の CRD（約 650KB）は client-side apply の
+      # last-applied-configuration の上限（256KB）を超える
+      - ServerSideApply=true
+  # KEDA の operator が自分で作る証明書の CA を書き込む
+  ignoreDifferences:
+    - group: apiregistration.k8s.io
+      kind: APIService
+      name: v1beta1.external.metrics.k8s.io
+      jsonPointers:
+        - /spec/caBundle
+        - /spec/insecureSkipTLSVerify
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: keda-admission
+      jqPathExpressions:
+        - .webhooks[]?.clientConfig.caBundle
