@@ -7,8 +7,11 @@ resources:
   - volsync-rclone-config-vrc-queue-monitor.enc.yaml
   - volsync-rclone-config-n8n.enc.yaml
 
+  - volsync-rclone-config-pplale-room-server.enc.yaml
+
   # ReplicationSources
   - misskey-postgresql.yaml
   - misskey-meilisearch.yaml
   - vrc-queue-monitor-postgresql.yaml
   - n8n.yaml
+  - pplale-room-history.yaml

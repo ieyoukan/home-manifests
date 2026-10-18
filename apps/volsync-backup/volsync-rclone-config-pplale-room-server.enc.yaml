@@ -1,0 +1,14 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: volsync-rclone-config
+  namespace: pplale-room-server
+spec:
+  encryptedData:
+    rclone.conf: AgARYopjnVBPWeM9lZuixJRNHV5tsuFUsBTHUFGdXnvETOj9tPyheYHTHjMbgQYwJBjhBal/XyUAj6sY+nfQHYIpgeVTbvqtMNUb5nO3Jcygx0vVcNN+NOPHWu03QkDHylBTMhLOr+IDkfy1eBxpNiqdy9HI7MgVdOrO6PA2aNWt0+U8wn+q4iiX6CbLyF9tDQzwkSRJUuaCbTuQY4K+hP5DelcN0k09CZbYPtLN/uKQzSopMh1igvaOo4leUshwJEKtg75bXYX1SP0jqG7A87x1sx7N//SfmKf0eIu3u7rde7oPxAOGNucWWHSizcKcdl7yzrzblR04MzX3SLIKqwOhKyGM9vsF0Vqz0UHC+i4wM4pmhsUHZ2QWbWpQBPA/c3HnnIbSfo3EtP8tC57veRTolwl869OTwYMhhrIb2DKUYh88vW4bvEg8O51hCzQowGUf3RozLdeBaReevOH3mUBOLd2SCpgfukp2eNaKpT3MFv2B0DzE2BXhX2BKyR07x9Xx2+0GYvTJcibMhgU2QXjF1PbCnzwCLa9OS1dRcnQEXVSze6b0pjmpuRpgtjKi3GG+Vz3mA4iE8P8twiomiqyMXLwCrpfMJrcMJOF/acTQy1prOP533WA9iaEkrGJGydBCfRDP/kX8SA5772tsJGy6COM2APo/E2sRQi1NgVjn8MbCYJs+VH5zwVUs1oP9j2Moo1e5vIFwFXUeU/dlBh3TWN+2n6NOhrKT/zx4QB4+HhDewGuhmZvDISb613JHhW8pO9aIcz4sz83fnJZapQg8cfbQpkkiC0NGhHZ9JCSPSJ9DdPJ9AticUvpxCYFok70jbydyfNTAF1kktkVWk4wjoS66WBpSHHoEww4t+ubuFSXCc5HhBfq5FEVINyZy5zh5QYq2ymBiszm+BNtqQgjqNU2Gpi0jOHM1PPZIdL88ZukoXP7a5azQq1TyD0rL6gWOSRk=
+  template:
+    metadata:
+      name: volsync-rclone-config
+      namespace: pplale-room-server
+    type: Opaque

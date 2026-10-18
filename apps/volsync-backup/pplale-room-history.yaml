@@ -1,0 +1,19 @@
+# PostgreSQL dumps (not the live PGDATA directory) are replicated after the daily dump.
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: pplale-room-history-backup
+  namespace: pplale-room-server
+spec:
+  sourcePVC: pplale-room-server-history-backups
+  trigger:
+    schedule: "45 18 * * *"  # UTC; pg_dump runs at 18:17 (03:17 JST).
+  rclone:
+    rcloneConfigSection: s3-backup
+    rcloneDestPath: k3s/pplale-room-history
+    copyMethod: Direct
+    rcloneConfig: volsync-rclone-config
+    moverSecurityContext:
+      runAsUser: 70
+      runAsGroup: 70
+      fsGroup: 70
