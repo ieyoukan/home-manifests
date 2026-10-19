@@ -52,6 +52,8 @@ spec:
           image:
             repository: ghcr.io/ubichill/ubichill-instance
             tag: latest
+          # 部屋の割り当てを Redis で共有する（複数台にする前提。台数はまだ 1）
+          directory: redis
         nodeAffinity:
           enabled: false
         ingress:
