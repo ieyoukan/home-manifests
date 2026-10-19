@@ -54,6 +54,10 @@ spec:
             tag: latest
           # 部屋の割り当てを Redis で共有する（複数台にする前提。台数はまだ 1）
           directory: redis
+          # Go の指標を Prometheus に集める（KEDA の台数の判断に使う）
+          metrics:
+            serviceMonitor:
+              enabled: true
         nodeAffinity:
           enabled: false
         ingress:
