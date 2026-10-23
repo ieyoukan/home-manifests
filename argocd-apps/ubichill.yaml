@@ -52,12 +52,17 @@ spec:
           image:
             repository: ghcr.io/ubichill/ubichill-instance
             tag: latest
-          # 部屋の割り当てを Redis で共有する（複数台にする前提。台数はまだ 1）
+          # 部屋の割り当てを Redis で共有する（複数台の前提）
           directory: redis
           # Go の指標を Prometheus に集める（KEDA の台数の判断に使う）
           metrics:
             serviceMonitor:
               enabled: true
+          # KEDA で台数を増やす（減らすのは手動。閾値は chart の既定 = ubichill#271 の負荷試験から）。
+          # 上限 3 はクラスタの空き（2 コア 3 台 + 5 コア 1 台、平常 50〜70%）に合わせる。
+          autoscaling:
+            enabled: true
+            maxReplicaCount: 3
         nodeAffinity:
           enabled: false
         ingress:
@@ -103,6 +108,12 @@ spec:
         maxDuration: 3m
   revisionHistoryLimit: 5
   ignoreDifferences:
+    # 台数は KEDA（HPA）が持つ。同期で戻さない
+    - group: apps
+      kind: Deployment
+      name: ubichill-instance
+      jsonPointers:
+        - /spec/replicas
     - group: apps
       kind: Deployment
       jsonPointers:
