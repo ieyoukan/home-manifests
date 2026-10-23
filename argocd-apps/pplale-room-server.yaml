@@ -28,6 +28,9 @@ spec:
         redis:
           persistence:
             storageClass: proxmox-data
+        # Web Push の VAPID 鍵 (apps/pplale-room-server の SealedSecret)。
+        push:
+          existingSecret: pplale-room-server-vapid
   destination:
     server: https://kubernetes.default.svc
     namespace: pplale-room-server
