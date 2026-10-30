@@ -29,9 +29,9 @@ kube-prometheus-stack:
       resources:
         requests:
           cpu: 200m
-          memory: 512Mi
+          memory: 1Gi
         limits:
-          memory: 2Gi
+          memory: 3Gi
 
   ## Alertmanager 設定
   alertmanager:
@@ -49,10 +49,10 @@ kube-prometheus-stack:
       ## リソース制限
       resources:
         requests:
-          cpu: 200m
-          memory: 512Mi
+          cpu: 10m
+          memory: 64Mi
         limits:
-          memory: 3Gi
+          memory: 256Mi
 
   ## Prometheus Operator 設定
   prometheusOperator:
@@ -74,6 +74,34 @@ kube-prometheus-stack:
     enabled: true
     tolerations:
       - operator: Exists
+
+  ## k3s は 1 プロセスに全コンポーネントが入っており、kubelet の /metrics にも
+  ## apiserver・etcd の指標が出る。apiserver ジョブと重複し series が約 2 倍になるため捨てる
+  kubelet:
+    serviceMonitor:
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          action: drop
+          regex: '(apiserver|etcd|aggregator|authentication|authorization|apiextensions|watch_cache|kube_apiserver)_.*'
+
+  ## apiserver の大きいヒストグラムのうち、ルール・ダッシュボードで使わないものを捨てる
+  kubeApiServer:
+    serviceMonitor:
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          action: drop
+          regex: '(etcd_request_duration_seconds|apiserver_request_body_size_bytes|apiserver_response_sizes|apiserver_watch_cache_read_wait_seconds|apiserver_watch_events_sizes)_bucket'
+
+  ## k3s では controller-manager / scheduler / proxy / etcd の個別エンドポイントがなく、
+  ## 常に *Down アラートが鳴るだけなので無効化する（指標は apiserver ジョブで取れている）
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  kubeEtcd:
+    enabled: false
 
   ## Kube State Metrics 設定
   kubeStateMetrics:
