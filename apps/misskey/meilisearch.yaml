@@ -17,6 +17,9 @@ metadata:
   namespace: misskey
 spec:
   replicas: 1
+  # RWO の PVC を使うので、新旧の Pod が同時に立たないようにする
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: meilisearch
@@ -36,16 +39,23 @@ spec:
                 secretKeyRef:
                   name: misskey-secrets
                   key: MEILISEARCH_MASTER_KEY
+            # 指定しないとノードの RAM（16Gi）の 2/3 まで使おうとして limit で OOMKilled になる
+            - name: MEILI_MAX_INDEXING_MEMORY
+              value: "1Gb"
+            - name: MEILI_MAX_INDEXING_THREADS
+              value: "2"
+            - name: MEILI_NO_ANALYTICS
+              value: "true"
           ports:
             - name: http
               containerPort: 7700
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "2Gi"
+              cpu: "1000m"
           volumeMounts:
             - name: data
               mountPath: /meili_data
