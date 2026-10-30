@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+
+resources:
+  - grafana-secrets.enc.yaml
+
+configMapGenerator:
+  - name: grafana-dashboard-ubichill
+    files:
+      - ubichill-instance.json=dashboards/ubichill-instance.json
+    options:
+      annotations:
+        grafana_folder: /tmp/dashboards/Ubichill
+  - name: grafana-dashboard-electricity
+    files:
+      - electricity.json=dashboards/electricity.json
+    options:
+      annotations:
+        grafana_folder: /tmp/dashboards/Home
+
+generatorOptions:
+  # ConfigMap の更新を sidecar が検出するので、名前は固定する。
+  disableNameSuffixHash: true
+  labels:
+    grafana_dashboard: "1"

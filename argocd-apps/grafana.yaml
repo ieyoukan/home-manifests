@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   sources:
-    # Sealed Secret の管理
+    # Sealed Secret とダッシュボードの管理
     - repoURL: https://github.com/ieyoukan/home-manifests.git
       targetRevision: main
       path: apps/grafana
@@ -28,6 +28,18 @@ spec:
             size: 10Gi
             storageClassName: proxmox-data
           envFromSecret: grafana-secrets
+          sidecar:
+            dashboards:
+              enabled: true
+              label: grafana_dashboard
+              labelValue: "1"
+              searchNamespace: monitoring
+              resource: configmap
+              folderAnnotation: grafana_folder
+              provider:
+                name: git-dashboards
+                foldersFromFilesStructure: true
+                allowUiUpdates: false
           datasources:
             datasources.yaml:
               apiVersion: 1
