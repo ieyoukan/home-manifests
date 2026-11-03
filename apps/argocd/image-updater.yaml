@@ -103,3 +103,14 @@ spec:
           manifestTargets:
             helm:
               tag: image.tag
+
+    - namePattern: taifu-kanakana
+      images:
+        - alias: taifu-kanakana
+          imageName: ghcr.io/ieyoukan/taifu-kanakana
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              tag: image.tag
