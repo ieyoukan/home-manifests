@@ -31,10 +31,10 @@ Pod ラベルは ServiceMonitor による収集時に付与される。
 - ファイル: `dashboards/ubichill-loadtest.json`
 - フォルダ: `Ubichill`
 - URL: https://grafana.youkan.uk/d/ubichill-loadtest
-- 変数: `namespace`（`ubichill` / `ubichill-dev`）、`scenario`（負荷試験の `scenario.name`）
-- 表示: 負荷の生成器（`ubichill_loadtest_*`。接続・カーソルの遅延 p50/p95/p99・入室の時間・変更の要求の結果・失敗）、Go の Pod（接続・中継・部屋・CPU・throttled・メモリ・draining）、スケーリング（HPA の台数と指標・閾値に対する割合）、Redis（redis_exporter。dev は `redis.metrics.enabled`）
+- 変数: `namespace`（`ubichill` / `ubichill-dev`）、`testid`（k6 の走りの名前）
+- 表示: 利用者（k6 の remote write。`k6_ubichill_*`・`k6_http_*`・`k6_ws_*`・`k6_browser_*`。部屋に居る人数・カーソルの遅延・入室の時間・要求の結果・失敗・画面の体験）、Go の Pod（接続・中継・部屋・CPU・throttled・メモリ・draining）、スケーリング（HPA の台数と指標・閾値に対する割合）、Redis（redis_exporter。dev は `redis.metrics.enabled`）
 - HPA の台数が変わった時刻を注釈（縦線）で出す。
-- 使い方は ubichill の `docs/operations/load-testing.md`。生成器は `charts/ubichill-loadtest`（PodMonitor で集める）。
+- 使い方は ubichill の `docs/operations/load-testing.md`。生成器は k6（`charts/ubichill-loadtest` が k6-operator の TestRun を作る。結果は Prometheus の remote write）。
 
 `Ubichill / Instance` も `namespace` 変数で dev を見られる。
 
