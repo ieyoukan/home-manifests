@@ -42,7 +42,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(max by (pod) (ubichill_instance_active_rooms{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"}))",
+          "expr": "sum(max by (pod) (ubichill_instance_active_rooms{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"}))",
           "instant": true,
           "range": false,
           "legendFormat": "{{pod}}",
@@ -98,7 +98,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(max by (pod) (ubichill_instance_room_capacity_available{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"}))",
+          "expr": "sum(max by (pod) (ubichill_instance_room_capacity_available{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"}))",
           "instant": true,
           "range": false,
           "legendFormat": "{{pod}}",
@@ -154,7 +154,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(max by (pod) (up{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"}))",
+          "expr": "sum(max by (pod) (up{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"}))",
           "instant": true,
           "range": false,
           "legendFormat": "{{pod}}",
@@ -210,7 +210,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max by (pod) (ubichill_instance_active_rooms{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"})",
+          "expr": "max by (pod) (ubichill_instance_active_rooms{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"})",
           "instant": true,
           "range": false,
           "legendFormat": "{{pod}}",
@@ -278,7 +278,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max by (pod) (ubichill_instance_active_rooms{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"})",
+          "expr": "max by (pod) (ubichill_instance_active_rooms{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"})",
           "instant": false,
           "range": true,
           "legendFormat": "{{pod}}",
@@ -346,7 +346,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max by (pod) (ubichill_instance_websocket_connections{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"})",
+          "expr": "max by (pod) (ubichill_instance_websocket_connections{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"})",
           "instant": false,
           "range": true,
           "legendFormat": "{{pod}}",
@@ -432,7 +432,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "max by (pod) (up{namespace=\"ubichill\",service=\"ubichill-instance\",pod=~\"${pod:regex}\"})",
+          "expr": "max by (pod) (up{namespace=\"$namespace\",service=~\".*-instance\",pod=~\"${pod:regex}\"})",
           "instant": true,
           "range": false,
           "legendFormat": "{{pod}}",
@@ -477,6 +477,31 @@
         "includeAll": false
       },
       {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(ubichill_instance_active_rooms, namespace)",
+        "query": {
+          "query": "label_values(ubichill_instance_active_rooms, namespace)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "sort": 1,
+        "hide": 0,
+        "multi": false,
+        "includeAll": false,
+        "current": {
+          "selected": true,
+          "text": "ubichill",
+          "value": "ubichill"
+        },
+        "options": []
+      },
+      {
         "name": "pod",
         "label": "Pod",
         "type": "query",
@@ -484,9 +509,9 @@
           "type": "prometheus",
           "uid": "${datasource}"
         },
-        "definition": "label_values(up{namespace=\"ubichill\",service=\"ubichill-instance\"}, pod)",
+        "definition": "label_values(up{namespace=\"$namespace\",service=~\".*-instance\"}, pod)",
         "query": {
-          "query": "label_values(up{namespace=\"ubichill\",service=\"ubichill-instance\"}, pod)",
+          "query": "label_values(up{namespace=\"$namespace\",service=~\".*-instance\"}, pod)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,

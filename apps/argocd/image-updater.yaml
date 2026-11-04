@@ -39,6 +39,37 @@ spec:
               name: instanceRuntime.image.repository
               tag: instanceRuntime.image.tag
 
+    # dev 環境は main の最新（:main-<sha>）を追う。:sha-<sha> は PR のプレビューにも付くので追わない
+    - namePattern: ubichill-dev
+      images:
+        - alias: backend
+          imageName: ghcr.io/ubichill/ubichill-backend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^main-
+          manifestTargets:
+            helm:
+              name: backend.image.repository
+              tag: backend.image.tag
+        - alias: frontend
+          imageName: ghcr.io/ubichill/ubichill-frontend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^main-
+          manifestTargets:
+            helm:
+              name: frontend.image.repository
+              tag: frontend.image.tag
+        - alias: instance
+          imageName: ghcr.io/ubichill/ubichill-instance
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^main-
+          manifestTargets:
+            helm:
+              name: instanceRuntime.image.repository
+              tag: instanceRuntime.image.tag
+
     - namePattern: vrc-queue-monitor
       images:
         # api / collector は同じイメージなので 1 エイリアスにまとめる

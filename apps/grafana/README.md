@@ -26,6 +26,18 @@ Pod ラベルは ServiceMonitor による収集時に付与される。
 ユニークな利用者数とは異なる。データ未取得を 0 部屋に置き換えず、
 収集失敗は `up` のパネルで確認できる。
 
+## Ubichill / Load test
+
+- ファイル: `dashboards/ubichill-loadtest.json`
+- フォルダ: `Ubichill`
+- URL: https://grafana.youkan.uk/d/ubichill-loadtest
+- 変数: `namespace`（`ubichill` / `ubichill-dev`）、`scenario`（負荷試験の `scenario.name`）
+- 表示: 負荷の生成器（`ubichill_loadtest_*`。接続・カーソルの遅延 p50/p95/p99・入室の時間・変更の要求の結果・失敗）、Go の Pod（接続・中継・部屋・CPU・throttled・メモリ・draining）、スケーリング（HPA の台数と指標・閾値に対する割合）、Redis（redis_exporter。dev は `redis.metrics.enabled`）
+- HPA の台数が変わった時刻を注釈（縦線）で出す。
+- 使い方は ubichill の `docs/operations/load-testing.md`。生成器は `charts/ubichill-loadtest`（PodMonitor で集める）。
+
+`Ubichill / Instance` も `namespace` 変数で dev を見られる。
+
 ## 電気代
 
 - ファイル: `dashboards/electricity.json`

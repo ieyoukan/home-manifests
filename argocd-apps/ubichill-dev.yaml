@@ -1,0 +1,193 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ubichill-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    notifications.argoproj.io/subscribe.on-sync-failed.discord: ""
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ubichill/ubichill
+    targetRevision: main
+    path: charts/ubichill
+    helm:
+      # dev は「本番と同じ構成で、環境変数だけ development」。
+      # values-dev.yaml（NODE_ENV=development・メール確認なし・未署名の同梱ワールド可・小さな resources）の上に、
+      # 本番と同じ永続化・Redis の Directory・指標・KEDA を重ねる。PR のプレビューと違い、DB・Redis は消えない。
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+      valuesObject:
+        global:
+          domain: dev.ubichill.com
+          imageRegistry: ""
+        backend:
+          existingSecret: "ubichill-dev-secrets"
+          image:
+            repository: ghcr.io/ubichill/ubichill-backend
+            # main の最新（Image Updater が :main-<sha> を追う。apps/argocd/image-updater.yaml）
+            tag: latest
+          env:
+            INSTANCE_EMPTY_TIMEOUT_MS: "5000"
+            INSTANCE_REAP_INTERVAL_MS: "1000"
+            INSTANCE_RECOVERY_GRACE_MS: "60000"
+            RATE_LIMIT_MAX_REQUESTS: "10000"
+            RATE_LIMIT_WINDOW_MS: "900000"
+            MAIL_FROM: "Ubichill dev <noreply@ubichill.com>"
+            SKIP_EMAIL_VERIFICATION: "true"
+            WORLDS_FEDERATION_PEERS: "https://ubichill.com"
+          resources:
+            limits:
+              cpu: 1500m
+              memory: 1.5Gi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          healthcheck:
+            livenessProbe:
+              initialDelaySeconds: 90
+              periodSeconds: 45
+              timeoutSeconds: 15
+              failureThreshold: 6
+            readinessProbe:
+              initialDelaySeconds: 45
+              periodSeconds: 15
+              timeoutSeconds: 10
+              failureThreshold: 5
+        frontend:
+          image:
+            repository: ghcr.io/ubichill/ubichill-frontend
+            tag: latest
+        instanceRuntime:
+          image:
+            repository: ghcr.io/ubichill/ubichill-instance
+            tag: latest
+          # 本番と同じ: 部屋の割り当てを Redis で共有し、指標を Prometheus に集め、KEDA で増減する
+          directory: redis
+          metrics:
+            serviceMonitor:
+              enabled: true
+          autoscaling:
+            enabled: true
+            maxReplicaCount: 3
+          # 負荷試験の生成器（ubichill.com/loadgen=true のノード）と同じノードには置かない。
+          # 生成器の CPU と取り合うと、Go の限界ではなく生成器の限界を測ってしまう
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: ubichill.com/loadgen
+                        operator: DoesNotExist
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/instance: ubichill-dev
+                        component: instance
+          # 本番と同じ上限（CPU 1 コア）。1 Pod の限界を本番と同じ条件で測る
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+        nodeAffinity:
+          enabled: false
+        ingress:
+          className: cloudflare
+          annotations: {}
+        redis:
+          auth:
+            existingSecret: ubichill-dev-secrets
+            existingSecretPasswordKey: REDIS_PASSWORD
+          master:
+            persistence:
+              enabled: true
+              storageClass: "proxmox-data"
+              size: 2Gi
+            resources:
+              limits:
+                memory: 512Mi
+                cpu: 500m
+              requests:
+                memory: 128Mi
+                cpu: 100m
+          # Redis の負荷（コマンド数・遅延・接続数）を負荷試験の間に見る（Grafana「Ubichill / Load test」）
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+            resources:
+              limits:
+                memory: 64Mi
+                cpu: 100m
+              requests:
+                memory: 32Mi
+                cpu: 20m
+        postgresql:
+          auth:
+            existingSecret: "ubichill-dev-secrets"
+            secretKeys:
+              adminPasswordKey: POSTGRES_PASSWORD
+              userPasswordKey: POSTGRES_PASSWORD
+            username: "ubichill"
+            database: "ubichill"
+          primary:
+            persistence:
+              enabled: true
+              storageClass: "proxmox-data"
+              size: 5Gi
+            resources:
+              limits:
+                memory: 1Gi
+                cpu: 1000m
+              requests:
+                memory: 256Mi
+                cpu: 100m
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ubichill-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 5
+  ignoreDifferences:
+    # 台数は KEDA（HPA）が持つ。同期で戻さない
+    - group: apps
+      kind: Deployment
+      name: ubichill-dev-instance
+      jsonPointers:
+        - /spec/replicas
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
+        - /spec/template/spec/containers/0/securityContext/capabilities
+        - /spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jsonPointers:
+        - /status
+    - group: ""
+      kind: PersistentVolumeClaim
+      jsonPointers:
+        - /spec/resources/requests/storage

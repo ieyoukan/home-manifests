@@ -9,6 +9,7 @@ configMapGenerator:
   - name: grafana-dashboard-ubichill
     files:
       - ubichill-instance.json=dashboards/ubichill-instance.json
+      - ubichill-loadtest.json=dashboards/ubichill-loadtest.json
     options:
       annotations:
         grafana_folder: /tmp/dashboards/Ubichill
