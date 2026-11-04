@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k6-operator
+  namespace: argocd
+  annotations:
+    # TestRun（k6.io/v1alpha1）を使う負荷試験より先に CRD を入れる
+    argocd.argoproj.io/sync-wave: "-3"
+  # resources-finalizer は付けない。Application を消したときに CRD まで消え、走っている TestRun が消えるのを防ぐ
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: k6-operator
+    targetRevision: 4.7.0
+    helm:
+      releaseName: k6-operator
+      valuesObject:
+        # namespace は Argo CD が作る（chart にも作らせると二重管理になる）
+        namespace:
+          create: false
+        # operator 自身も生成器のノードに置く（Go・本番の Pod と CPU を取り合わない）
+        nodeSelector:
+          ubichill.com/loadgen: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k6-operator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # CRD（TestRun・PrivateLoadZone）は client-side apply の last-applied-configuration の上限を超えうる
+      - ServerSideApply=true

@@ -20,6 +20,12 @@ kube-prometheus-stack:
               requests:
                 storage: 50Gi
 
+      ## k6 の負荷試験の結果を remote write で受ける（-o experimental-prometheus-rw）。
+      ## 書き込みに認証は無いので、クラスタの外には出さない（Service は ClusterIP のまま）
+      enableRemoteWriteReceiver: true
+      ## k6 の Trend は p(50)/p(95)/p(99)/max の gauge で受ける（K6_PROMETHEUS_RW_TREND_STATS）。
+      ## native-histograms の feature flag は scrape の形式まで変わり、既存の classic histogram を読む監視に響くので有効にしない
+
       ## 全ネームスペースの Custom Resource を自動検出
       serviceMonitorSelectorNilUsesHelmValues: false
       podMonitorSelectorNilUsesHelmValues: false
