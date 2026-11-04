@@ -122,6 +122,10 @@ spec:
           # Redis の負荷（コマンド数・遅延・接続数）を負荷試験の間に見る（Grafana「Ubichill / Load test」）
           metrics:
             enabled: true
+            # Bitnami は docker.io/bitnami/* の版付きタグを消した（chart の values.yaml の redis.image の注記）。
+            # exporter は snapshot の bitnamilegacy から取る
+            image:
+              repository: bitnamilegacy/redis-exporter
             serviceMonitor:
               enabled: true
             resources:
