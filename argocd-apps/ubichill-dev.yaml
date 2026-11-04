@@ -37,6 +37,8 @@ spec:
             RATE_LIMIT_WINDOW_MS: "900000"
             MAIL_FROM: "Ubichill dev <noreply@ubichill.com>"
             SKIP_EMAIL_VERIFICATION: "true"
+            # 負荷試験（k6）は少ない IP から多くの部屋を作る。本番（NODE_ENV=production）では既定より大きくできない
+            INSTANCE_CREATE_LIMIT_PER_HOUR: "1000"
             WORLDS_FEDERATION_PEERS: "https://ubichill.com"
           resources:
             limits:
