@@ -1,7 +1,0 @@
-nfs:
-  server: 192.168.0.9      # TrueNASのIP
-  path: /mnt/public/k3s    # TrueNASで作ったパス
-  
-storageClass:
-  name: nfs-client            # これを後で指定する
-  defaultClass: false         # Proxmox CSI を使用するため無効化
