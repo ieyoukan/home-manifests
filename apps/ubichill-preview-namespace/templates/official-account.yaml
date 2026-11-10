@@ -1,0 +1,21 @@
+{{- /*
+  preview の全環境で、公式アカウント（ID ubichill）のパスワードを dev（ubichill-dev-secrets）と同じにする。
+  preview の namespace は PR ごとに変わるので、cluster-wide で暗号化した（どの namespace でも復号できる）。
+  ubichill の chart の backend.extraSecretRefs で読む（chart の secretEnv の空の値より後に読むので、こちらが勝つ）。
+  dev のパスワードを変えたら、ここも作り直す。
+*/}}
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/cluster-wide: "true"
+  name: ubichill-preview-official
+  namespace: {{ required "name を指定してください" .Values.name }}
+spec:
+  encryptedData:
+    OFFICIAL_ACCOUNT_PASSWORD: AgA2Rw6oVj7LsGyxJxFpFGhqpg/3lNrFqL45dnZGw4PcCvhv2DsHONx7SjS2vNooKMCnbdBRspD4d5Qhv89mnR4cU6MpwWvkb3b3VEAOhY219bs1k5KNONxcFx9GIO3OCMoseBbSsVeAyvm17Pcv4hq3qcwuDpBNt/sCXtWjF5JaLz5giTCibYnDEjEwfaTLqEsrqJz+7FCbvzI01Pzm5x2MqCaCwI47x15S4vKaU049p2m46/uyBNgMCV+YB5AtOiu0HOb2vwaE4VhJntoOCuwNRyi/ncM3bWnoRgMb0T6j+uecqSVsWxB2cpCBjpXw3ocqhRCspucY6ZZiqSBV1IUjVuTa/e8hwid9CHa/7noV0AVj7sr9Up1nFSwFnl5uuqnUSkGgO0P74K2S+QwfyxuUAzoQlm/Fw00KoWhW6jCBkH66/3q6FT13Ap8Zf8DMN2ihNpdoCDc8jIc1bji49HKcRsATjhfBxUodmqV5BGRuTWRcfSMxwHO/BeidD4+hnwBAlrc1vMM7tipysW+8Aa0Ywe6xKhgjdvdA2r9avHt/5cbgc/HiF9Wy0IgUGLMt7iL3LemdrnJN6DWLUC2OIEDUnQddswM/oWDgSFJZxIMYuWytMdV/jPn5sZAAOkjB+QRahJLJs1DX4BEYU7nocf/Jw8A96aBRk4uv9gPbEAJS/mTJkAcVrrKH55mjW49MYFRsFnYxL51AHXDUVD12hUyLiUBY8sAVOyY=
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/cluster-wide: "true"
+      name: ubichill-preview-official

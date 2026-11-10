@@ -71,6 +71,9 @@ spec:
                 secretEnv:
                   # 開発専用。chartの古い既定値でもGo/SNSに同じ32文字以上のキーを渡す。
                   INSTANCE_ADMIN_TOKEN: "dev-instance-admin-token-not-for-production"
+                # 公式アカウントのパスワード（dev と同じ。apps/ubichill-preview-namespace の official-account.yaml）
+                extraSecretRefs:
+                  - ubichill-preview-official
                 env:
                   INSTANCE_EMPTY_TIMEOUT_MS: "5000"
                   INSTANCE_REAP_INTERVAL_MS: "1000"
