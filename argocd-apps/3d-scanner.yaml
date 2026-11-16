@@ -1,0 +1,91 @@
+# 3D Scanner: スマホの写真から 3D モデル（メッシュ / 3DGS）を作る Web アプリ
+# chart とアプリ本体: https://github.com/ieyoukan/3d-scanner
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: 3d-scanner
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ieyoukan/3d-scanner.git
+    targetRevision: main
+    path: charts/3d-scanner
+    helm:
+      releaseName: scanner
+      valuesObject:
+        image:
+          repository: ghcr.io/ieyoukan/3d-scanner
+          # コミットごとのタグで固定する（latest だと、どの版が動いているか分からなくなる）。
+          # 更新するときは、3d-scanner の Actions（Image）が公開した sha-<コミット> に書き換える。
+          tag: sha-e58f622
+
+        # アクセストークンと DB パスワードは apps/3d-scanner の SealedSecret から（3d-scanner-secrets）
+        auth:
+          existingSecret: 3d-scanner-secrets
+          # Cloudflare Tunnel 経由のアクセスなので、接続元の判定に CF-Connecting-IP を使う
+          trustProxyHeaders: true
+
+        ingress:
+          enabled: true
+          className: cloudflare
+          annotations: {}
+          hosts:
+            - host: scanner.youkan.uk
+              paths:
+                - path: /
+                  pathType: Prefix
+          tls: []
+
+        # 写真・中間ファイル・成果物（保存期間を過ぎたら自動で消える）
+        persistence:
+          storageClass: proxmox-data
+          size: 30Gi
+
+        postgresql:
+          auth:
+            existingSecret: 3d-scanner-secrets
+          persistence:
+            storageClass: proxmox-data
+            size: 2Gi
+
+        config:
+          # 写真と結果を保存する期間
+          retention: 24h
+          pipeline:
+            # resources.limits.cpu と同じ値にする
+            numThreads: 3
+            # クラスタに GPU は無いので CPU で学習する。1 反復あたり 1 秒強の見込み
+            splatIterations: 1000
+            splatDownscale: 2
+
+        # SfM と 3DGS は CPU を使い切る。他のアプリを圧迫しないよう上限を 3 コアにする
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "3"
+            memory: 6Gi
+
+        # コア数の少ない control-plane のノードには載せない（ワーカーに寄せる）
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: DoesNotExist
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: 3d-scanner
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  revisionHistoryLimit: 5
