@@ -22,9 +22,11 @@ spec:
           # 更新するときは、3d-scanner の Actions（Image）が公開した sha-<コミット> に書き換える。
           tag: sha-e58f622
 
-        # アクセストークンと DB パスワードは apps/3d-scanner の SealedSecret から（3d-scanner-secrets）
+        # 認証は Cloudflare Access（scanner.youkan.uk の前段）に任せる。アプリ側のトークンは使わない。
+        # マージ前に Cloudflare Zero Trust で Access アプリケーションを作っておくこと（無いと誰でも使える）。
+        # DB パスワードは apps/3d-scanner の SealedSecret から（postgresql.auth.existingSecret）
         auth:
-          existingSecret: 3d-scanner-secrets
+          allowNoAuth: true
           # Cloudflare Tunnel 経由のアクセスなので、接続元の判定に CF-Connecting-IP を使う
           trustProxyHeaders: true
 
