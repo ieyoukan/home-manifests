@@ -18,8 +18,7 @@ spec:
       valuesObject:
         image:
           repository: ghcr.io/ieyoukan/3d-scanner
-          # コミットごとのタグで固定する（latest だと、どの版が動いているか分からなくなる）。
-          # 更新するときは、3d-scanner の Actions（Image）が公開した sha-<コミット> に書き換える。
+          # 初期値。以後は Argo CD Image Updater が最新の :sha-<コミット> に更新する（apps/argocd/image-updater.yaml）。
           tag: sha-f4b7daf
 
         # アプリ自体にはログインが無い。認証は Cloudflare Access（scanner.youkan.uk の前段）で行う。

@@ -145,3 +145,16 @@ spec:
           manifestTargets:
             helm:
               tag: image.tag
+
+    # 3d-scanner: main への push ごとに Actions が :sha-<短縮コミット> を公開する。:latest は追わない
+    - namePattern: 3d-scanner
+      images:
+        - alias: scanner
+          imageName: ghcr.io/ieyoukan/3d-scanner
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^sha-[0-9a-f]+$
+          manifestTargets:
+            helm:
+              name: image.repository
+              tag: image.tag
