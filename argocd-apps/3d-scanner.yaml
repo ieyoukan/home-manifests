@@ -20,15 +20,10 @@ spec:
           repository: ghcr.io/ieyoukan/3d-scanner
           # コミットごとのタグで固定する（latest だと、どの版が動いているか分からなくなる）。
           # 更新するときは、3d-scanner の Actions（Image）が公開した sha-<コミット> に書き換える。
-          tag: sha-e58f622
+          tag: sha-f4b7daf
 
-        # 認証は Cloudflare Access（scanner.youkan.uk の前段）に任せる。アプリ側のトークンは使わない。
+        # アプリ自体にはログインが無い。認証は Cloudflare Access（scanner.youkan.uk の前段）で行う。
         # マージ前に Cloudflare Zero Trust で Access アプリケーションを作っておくこと（無いと誰でも使える）。
-        # DB パスワードは apps/3d-scanner の SealedSecret から（postgresql.auth.existingSecret）
-        auth:
-          allowNoAuth: true
-          # Cloudflare Tunnel 経由のアクセスなので、接続元の判定に CF-Connecting-IP を使う
-          trustProxyHeaders: true
 
         ingress:
           enabled: true
