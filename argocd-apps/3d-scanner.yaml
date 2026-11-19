@@ -52,18 +52,20 @@ spec:
           retention: 24h
           pipeline:
             # resources.limits.cpu と同じ値にする
-            numThreads: 3
+            numThreads: 4
             # クラスタに GPU は無いので CPU で学習する。1 反復あたり 1 秒強の見込み
             splatIterations: 1000
             splatDownscale: 2
 
-        # SfM と 3DGS は CPU を使い切る。他のアプリを圧迫しないよう上限を 3 コアにする
+        # SfM と 3DGS は CPU を使い切る。ワーカーは 5 コア（home-infra の terraform: k3s_worker_defaults）なので、
+        # 1 コアは同じノードの他のアプリ（ubichill の本番など）に残し、上限を 4 コアにする。
+        # 位置推定は CPU での SIFT の照合が大半で、スレッド数にほぼ比例して速くなる。
         resources:
           requests:
             cpu: 500m
             memory: 1Gi
           limits:
-            cpu: "3"
+            cpu: "4"
             memory: 6Gi
 
         # コア数の少ない control-plane のノードには載せない（ワーカーに寄せる）
