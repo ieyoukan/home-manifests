@@ -11,7 +11,7 @@
 
 | | ID | パスワード |
 |---|---|---|
-| 公式アカウント（管理者） | `ubichill` | Secret の `OFFICIAL_ACCOUNT_PASSWORD` |
+| 公式アカウント（管理者） | `ubichill` | PR のプレビュー・dev と同じ（`official-account.yaml`。`ubichill-demo-secrets` の値より優先） |
 | デモ用 | `demo` | 手元の `ubichill-demo-recruiter.env`（Git には入れない） |
 
 デモ用のアカウントは、デプロイ後に登録 API で作った（メール確認なしなのでそのまま使える）:
