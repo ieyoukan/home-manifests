@@ -25,6 +25,9 @@ spec:
           imageRegistry: ""
         backend:
           existingSecret: "ubichill-cybozu-secrets"
+          # 公式アカウントのパスワードを PR のプレビューと同じにする（apps/ubichill-cybozu/official-account.yaml）
+          extraSecretRefs:
+            - ubichill-preview-official
           image:
             repository: ghcr.io/ubichill/ubichill-backend
             # リリース版の最新（Image Updater が :vX.Y.Z を追う。apps/argocd/image-updater.yaml）
