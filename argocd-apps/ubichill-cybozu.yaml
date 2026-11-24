@@ -1,0 +1,126 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ubichill-cybozu
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    notifications.argoproj.io/subscribe.on-sync-failed.discord: ""
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ubichill/ubichill
+    targetRevision: main
+    path: charts/ubichill
+    helm:
+      # サイボウズの面接用（cybozu.ubichill.com）。apps/ubichill-cybozu/README.md
+      # values-dev.yaml（メール確認なし = 採用担当のアカウントを API で作れる）の上に、DB の永続化だけ重ねた小さな構成。
+      # イメージは本番と同じリリース版（vX.Y.Z）を追う（面接中に main の変更で壊れないように）。
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+      valuesObject:
+        global:
+          domain: cybozu.ubichill.com
+          imageRegistry: ""
+        backend:
+          existingSecret: "ubichill-cybozu-secrets"
+          image:
+            repository: ghcr.io/ubichill/ubichill-backend
+            # リリース版の最新（Image Updater が :vX.Y.Z を追う。apps/argocd/image-updater.yaml）
+            tag: latest
+          env:
+            INSTANCE_EMPTY_TIMEOUT_MS: "5000"
+            INSTANCE_REAP_INTERVAL_MS: "1000"
+            INSTANCE_RECOVERY_GRACE_MS: "60000"
+            MAIL_FROM: "Ubichill cybozu <noreply@ubichill.com>"
+            SKIP_EMAIL_VERIFICATION: "true"
+            # 本番（ubichill.com）を連合でフォローし、公式ワールドを一覧に出す
+            WORLDS_FEDERATION_PEERS: "https://ubichill.com"
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          healthcheck:
+            livenessProbe:
+              initialDelaySeconds: 90
+              periodSeconds: 45
+              timeoutSeconds: 15
+              failureThreshold: 6
+            readinessProbe:
+              initialDelaySeconds: 45
+              periodSeconds: 15
+              timeoutSeconds: 10
+              failureThreshold: 5
+        frontend:
+          image:
+            repository: ghcr.io/ubichill/ubichill-frontend
+            tag: latest
+        instanceRuntime:
+          image:
+            repository: ghcr.io/ubichill/ubichill-instance
+            tag: latest
+        nodeAffinity:
+          enabled: false
+        ingress:
+          className: cloudflare
+          annotations: {}
+        redis:
+          # Argo CD の描画で乱数を生成させない
+          auth:
+            existingSecret: ubichill-cybozu-secrets
+            existingSecretPasswordKey: REDIS_PASSWORD
+        postgresql:
+          auth:
+            existingSecret: "ubichill-cybozu-secrets"
+            secretKeys:
+              adminPasswordKey: POSTGRES_PASSWORD
+              userPasswordKey: POSTGRES_PASSWORD
+            username: "ubichill"
+            database: "ubichill"
+          primary:
+            # 採用担当のアカウントを消さない
+            persistence:
+              enabled: true
+              storageClass: "proxmox-data"
+              size: 2Gi
+            resources:
+              limits:
+                memory: 512Mi
+                cpu: 500m
+              requests:
+                memory: 128Mi
+                cpu: 50m
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ubichill-cybozu
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=background
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 5
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation
+        - /spec/template/spec/containers/0/securityContext/capabilities
+        - /spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem
+    - group: ""
+      kind: PersistentVolumeClaim
+      jsonPointers:
+        - /spec/resources/requests/storage
