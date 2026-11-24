@@ -11,7 +11,7 @@
 
 | | ID | パスワード |
 |---|---|---|
-| 公式アカウント（管理者） | `ubichill` | Secret の `OFFICIAL_ACCOUNT_PASSWORD` |
+| 公式アカウント（管理者） | `ubichill` | PR のプレビュー・dev と同じ（`official-account.yaml`。`ubichill-cybozu-secrets` の値より優先） |
 | 採用担当 | `cybozu` | 手元の `ubichill-cybozu-recruiter.env`（Git には入れない） |
 
 採用担当のアカウントは、デプロイ後に登録 API で作った（メール確認なしなのでそのまま使える）:
