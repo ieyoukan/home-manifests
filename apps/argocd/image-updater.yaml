@@ -70,6 +70,37 @@ spec:
               name: instanceRuntime.image.repository
               tag: instanceRuntime.image.tag
 
+    # デモ用。見てもらっている最中に壊れないよう本番と同じリリース版（:vX.Y.Z）を追う
+    - namePattern: ubichill-demo
+      images:
+        - alias: backend
+          imageName: ghcr.io/ubichill/ubichill-backend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: backend.image.repository
+              tag: backend.image.tag
+        - alias: frontend
+          imageName: ghcr.io/ubichill/ubichill-frontend
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: frontend.image.repository
+              tag: frontend.image.tag
+        - alias: instance
+          imageName: ghcr.io/ubichill/ubichill-instance
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^v[0-9]
+          manifestTargets:
+            helm:
+              name: instanceRuntime.image.repository
+              tag: instanceRuntime.image.tag
+
     - namePattern: vrc-queue-monitor
       images:
         # api / collector は同じイメージなので 1 エイリアスにまとめる
