@@ -177,15 +177,34 @@ spec:
             helm:
               tag: image.tag
 
-    # 3d-scanner: main への push ごとに Actions が :sha-<短縮コミット> を公開する。:latest は追わない
+    # 3d-scanner: main への push ごとに Actions が、中身の変わったイメージだけ :sha-<短縮コミット> を公開する。
+    # :latest は追わない。画面（web）・API（api）・復元（worker）を別々に更新する
     - namePattern: 3d-scanner
       images:
-        - alias: scanner
-          imageName: ghcr.io/ieyoukan/3d-scanner
+        - alias: web
+          imageName: ghcr.io/ieyoukan/3d-scanner-web
           commonUpdateSettings:
             updateStrategy: newest-build
             allowTags: regexp:^sha-[0-9a-f]+$
           manifestTargets:
             helm:
-              name: image.repository
-              tag: image.tag
+              name: web.image.repository
+              tag: web.image.tag
+        - alias: api
+          imageName: ghcr.io/ieyoukan/3d-scanner-api
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^sha-[0-9a-f]+$
+          manifestTargets:
+            helm:
+              name: api.image.repository
+              tag: api.image.tag
+        - alias: worker
+          imageName: ghcr.io/ieyoukan/3d-scanner-worker
+          commonUpdateSettings:
+            updateStrategy: newest-build
+            allowTags: regexp:^sha-[0-9a-f]+$
+          manifestTargets:
+            helm:
+              name: worker.image.repository
+              tag: worker.image.tag
