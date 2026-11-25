@@ -16,10 +16,21 @@ spec:
     helm:
       releaseName: scanner
       valuesObject:
-        image:
-          repository: ghcr.io/ieyoukan/3d-scanner
-          # 初期値。以後は Argo CD Image Updater が最新の :sha-<コミット> に更新する（apps/argocd/image-updater.yaml）。
-          tag: sha-f4b7daf
+        # 役割ごとのイメージ（画面 / API / 復元のワーカー）。tag は初期値で、以後は Argo CD Image Updater が
+        # イメージごとに最新の :sha-<コミット> に更新する（apps/argocd/image-updater.yaml）。
+        # 3d-scanner の CI は中身の変わったイメージだけを公開するので、画面だけ直したときにワーカーは入れ替わらない。
+        web:
+          image:
+            repository: ghcr.io/ieyoukan/3d-scanner-web
+            tag: sha-979b656
+        api:
+          image:
+            repository: ghcr.io/ieyoukan/3d-scanner-api
+            tag: sha-979b656
+        worker:
+          image:
+            repository: ghcr.io/ieyoukan/3d-scanner-worker
+            tag: sha-979b656
 
         # アプリ自体にはログインが無い。認証は Cloudflare Access（scanner.youkan.uk の前段）で行う。
         # マージ前に Cloudflare Zero Trust で Access アプリケーションを作っておくこと（無いと誰でも使える）。
@@ -57,6 +68,7 @@ spec:
             splatIterations: 1000
             splatDownscale: 2
 
+        # 以下の resources はワーカー（scanner-worker）のもの。画面と API は小さいので chart の既定のまま。
         # SfM と 3DGS は CPU を使い切る。ワーカーは 5 コア（home-infra の terraform: k3s_worker_defaults）なので、
         # 1 コアは同じノードの他のアプリ（ubichill の本番など）に残し、上限を 4 コアにする。
         # 位置推定は CPU での SIFT の照合が大半で、スレッド数にほぼ比例して速くなる。
@@ -68,7 +80,8 @@ spec:
             cpu: "4"
             memory: 6Gi
 
-        # コア数の少ない control-plane のノードには載せない（ワーカーに寄せる）
+        # コア数の少ない control-plane のノードには載せない（ワーカーに寄せる）。3 つの Pod すべてに付く。
+        # API とワーカーは同じ PVC を使うので、chart が同じノードに載せる（podAffinity）
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
