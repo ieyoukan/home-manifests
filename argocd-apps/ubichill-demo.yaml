@@ -13,7 +13,7 @@ spec:
     targetRevision: main
     path: charts/ubichill
     helm:
-      # デモ用（demo.ubichill.com）。apps/ubichill-demo/README.md
+      # デモ用（demo.ubichill.com）。外部の人に触ってもらう環境。apps/ubichill-demo/README.md
       # values-dev.yaml（メール確認なし = デモ用のアカウントを API で作れる）の上に、DB の永続化だけ重ねた小さな構成。
       # イメージは本番と同じリリース版（vX.Y.Z）を追う（見てもらっている最中に main の変更で壊れないように）。
       valueFiles:

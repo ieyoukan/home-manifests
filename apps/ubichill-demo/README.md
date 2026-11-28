@@ -12,13 +12,13 @@
 | | ID | パスワード |
 |---|---|---|
 | 公式アカウント（管理者） | `ubichill` | PR のプレビュー・dev と同じ（`official-account.yaml`。`ubichill-demo-secrets` の値より優先） |
-| デモ用 | `demo` | 手元の `ubichill-demo-recruiter.env`（Git には入れない） |
+| デモ用 | `demo` | 手元の `ubichill-demo-account.env`（Git には入れない） |
 
 デモ用のアカウントは、デプロイ後に登録 API で作った（メール確認なしなのでそのまま使える）:
 
 ```sh
 curl -sS https://demo.ubichill.com/api/v1/users/register -H 'Content-Type: application/json' \
-  -d '{"email":"demo@demo.ubichill.com","password":"...","displayName":"demo","handle":"demo"}'
+  -d '{"email":"demo@demo.ubichill.com","password":"...","displayName":"ゲスト","handle":"demo"}'
 ```
 
 ## Secret の更新
@@ -33,4 +33,5 @@ kubectl create secret generic ubichill-demo-secrets -n ubichill-demo --from-env-
 
 ## 片付け
 
-要らなくなったら `argocd-apps/ubichill-demo*.yaml`・`apps/ubichill-demo/`・Image Updater の `ubichill-demo` を消す（PVC は手で消す）。
+要らなくなったら `argocd-apps/ubichill-demo*.yaml`・`apps/ubichill-demo/`・Image Updater の `ubichill-demo` を消す。
+子の Application に resources-finalizer が無いので、Namespace `ubichill-demo`（PVC ごと）は手で消す。

@@ -70,7 +70,7 @@ spec:
               name: instanceRuntime.image.repository
               tag: instanceRuntime.image.tag
 
-    # デモ用。見てもらっている最中に壊れないよう本番と同じリリース版（:vX.Y.Z）を追う
+    # デモ用（demo.ubichill.com）。見てもらっている最中に壊れないよう本番と同じリリース版（:vX.Y.Z）を追う
     - namePattern: ubichill-demo
       images:
         - alias: backend
