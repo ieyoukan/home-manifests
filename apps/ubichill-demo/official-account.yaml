@@ -1,13 +1,13 @@
 # 公式アカウント（ID ubichill）のパスワードを PR のプレビュー・dev と同じにする。
 # apps/ubichill-preview-namespace/templates/official-account.yaml と同じ cluster-wide の SealedSecret の写し。
-# argocd-apps/ubichill-cybozu.yaml の backend.extraSecretRefs で読む（ubichill-cybozu-secrets より後に読むので、こちらが勝つ）。
+# argocd-apps/ubichill-demo.yaml の backend.extraSecretRefs で読む（ubichill-demo-secrets より後に読むので、こちらが勝つ）。
 apiVersion: bitnami.com/v1alpha1
 kind: SealedSecret
 metadata:
   annotations:
     sealedsecrets.bitnami.com/cluster-wide: "true"
   name: ubichill-preview-official
-  namespace: ubichill-cybozu
+  namespace: ubichill-demo
 spec:
   encryptedData:
     OFFICIAL_ACCOUNT_PASSWORD: AgA2Rw6oVj7LsGyxJxFpFGhqpg/3lNrFqL45dnZGw4PcCvhv2DsHONx7SjS2vNooKMCnbdBRspD4d5Qhv89mnR4cU6MpwWvkb3b3VEAOhY219bs1k5KNONxcFx9GIO3OCMoseBbSsVeAyvm17Pcv4hq3qcwuDpBNt/sCXtWjF5JaLz5giTCibYnDEjEwfaTLqEsrqJz+7FCbvzI01Pzm5x2MqCaCwI47x15S4vKaU049p2m46/uyBNgMCV+YB5AtOiu0HOb2vwaE4VhJntoOCuwNRyi/ncM3bWnoRgMb0T6j+uecqSVsWxB2cpCBjpXw3ocqhRCspucY6ZZiqSBV1IUjVuTa/e8hwid9CHa/7noV0AVj7sr9Up1nFSwFnl5uuqnUSkGgO0P74K2S+QwfyxuUAzoQlm/Fw00KoWhW6jCBkH66/3q6FT13Ap8Zf8DMN2ihNpdoCDc8jIc1bji49HKcRsATjhfBxUodmqV5BGRuTWRcfSMxwHO/BeidD4+hnwBAlrc1vMM7tipysW+8Aa0Ywe6xKhgjdvdA2r9avHt/5cbgc/HiF9Wy0IgUGLMt7iL3LemdrnJN6DWLUC2OIEDUnQddswM/oWDgSFJZxIMYuWytMdV/jPn5sZAAOkjB+QRahJLJs1DX4BEYU7nocf/Jw8A96aBRk4uv9gPbEAJS/mTJkAcVrrKH55mjW49MYFRsFnYxL51AHXDUVD12hUyLiUBY8sAVOyY=

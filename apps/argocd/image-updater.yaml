@@ -70,8 +70,8 @@ spec:
               name: instanceRuntime.image.repository
               tag: instanceRuntime.image.tag
 
-    # サイボウズの面接用。面接中に壊れないよう本番と同じリリース版（:vX.Y.Z）を追う
-    - namePattern: ubichill-cybozu
+    # デモ用（demo.ubichill.com）。見てもらっている最中に壊れないよう本番と同じリリース版（:vX.Y.Z）を追う
+    - namePattern: ubichill-demo
       images:
         - alias: backend
           imageName: ghcr.io/ubichill/ubichill-backend

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ubichill-cybozu
+  name: ubichill-demo
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -13,19 +13,19 @@ spec:
     targetRevision: main
     path: charts/ubichill
     helm:
-      # サイボウズの面接用（cybozu.ubichill.com）。apps/ubichill-cybozu/README.md
-      # values-dev.yaml（メール確認なし = 採用担当のアカウントを API で作れる）の上に、DB の永続化だけ重ねた小さな構成。
-      # イメージは本番と同じリリース版（vX.Y.Z）を追う（面接中に main の変更で壊れないように）。
+      # デモ用（demo.ubichill.com）。外部の人に触ってもらう環境。apps/ubichill-demo/README.md
+      # values-dev.yaml（メール確認なし = デモ用のアカウントを API で作れる）の上に、DB の永続化だけ重ねた小さな構成。
+      # イメージは本番と同じリリース版（vX.Y.Z）を追う（見てもらっている最中に main の変更で壊れないように）。
       valueFiles:
         - values.yaml
         - values-dev.yaml
       valuesObject:
         global:
-          domain: cybozu.ubichill.com
+          domain: demo.ubichill.com
           imageRegistry: ""
         backend:
-          existingSecret: "ubichill-cybozu-secrets"
-          # 公式アカウントのパスワードを PR のプレビューと同じにする（apps/ubichill-cybozu/official-account.yaml）
+          existingSecret: "ubichill-demo-secrets"
+          # 公式アカウントのパスワードを PR のプレビューと同じにする（apps/ubichill-demo/official-account.yaml）
           extraSecretRefs:
             - ubichill-preview-official
           image:
@@ -36,7 +36,7 @@ spec:
             INSTANCE_EMPTY_TIMEOUT_MS: "5000"
             INSTANCE_REAP_INTERVAL_MS: "1000"
             INSTANCE_RECOVERY_GRACE_MS: "60000"
-            MAIL_FROM: "Ubichill cybozu <noreply@ubichill.com>"
+            MAIL_FROM: "Ubichill demo <noreply@ubichill.com>"
             SKIP_EMAIL_VERIFICATION: "true"
             # 本番（ubichill.com）を連合でフォローし、公式ワールドを一覧に出す
             WORLDS_FEDERATION_PEERS: "https://ubichill.com"
@@ -74,18 +74,18 @@ spec:
         redis:
           # Argo CD の描画で乱数を生成させない
           auth:
-            existingSecret: ubichill-cybozu-secrets
+            existingSecret: ubichill-demo-secrets
             existingSecretPasswordKey: REDIS_PASSWORD
         postgresql:
           auth:
-            existingSecret: "ubichill-cybozu-secrets"
+            existingSecret: "ubichill-demo-secrets"
             secretKeys:
               adminPasswordKey: POSTGRES_PASSWORD
               userPasswordKey: POSTGRES_PASSWORD
             username: "ubichill"
             database: "ubichill"
           primary:
-            # 採用担当のアカウントを消さない
+            # デモ用のアカウントを消さない
             persistence:
               enabled: true
               storageClass: "proxmox-data"
@@ -100,7 +100,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: ubichill-cybozu
+    namespace: ubichill-demo
   syncPolicy:
     automated:
       prune: true
